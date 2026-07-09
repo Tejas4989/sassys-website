@@ -1,0 +1,41 @@
+name = "sassys"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+main = ".open-next/worker.js"
+assets = { directory = ".open-next/assets", binding = "ASSETS" }
+
+[observability]
+enabled = true
+
+[[d1_databases]]
+# Reserved — not using D1 (using Neon), but wrangler needs this block if using KV
+# Remove or repurpose if not needed
+
+[[kv_namespaces]]
+binding = "RATE_LIMIT_KV"
+id = "placeholder_replace_with_real_id"
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "sassys-media"
+
+[vars]
+NEXT_PUBLIC_APP_URL = "https://mysassys.com"
+
+# Secrets (set via: wrangler secret put <NAME>)
+# DATABASE_URL          — Neon connection string
+# AUTH_SECRET           — Auth.js secret (openssl rand -base64 32)
+# RESEND_API_KEY        — Resend API key
+# CLOVER_MERCHANT_ID    — Clover merchant ID
+# CLOVER_API_KEY        — Clover API key
+# CLOVER_WEBHOOK_SECRET — Clover webhook HMAC secret
+# VAPID_PUBLIC_KEY      — Web Push VAPID public key
+# VAPID_PRIVATE_KEY     — Web Push VAPID private key
+# R2_ACCOUNT_ID         — Cloudflare account ID for R2 presigned URLs
+# R2_ACCESS_KEY_ID      — R2 access key ID
+# R2_SECRET_ACCESS_KEY  — R2 secret access key
+
+[env.staging]
+name = "sassys-staging"
+[env.staging.vars]
+NEXT_PUBLIC_APP_URL = "https://v2.mysassys.com"
