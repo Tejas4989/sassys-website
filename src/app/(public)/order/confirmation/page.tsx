@@ -4,7 +4,8 @@ import { CheckCircle2, Clock, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { db } from "@/db/client";
 import { orders, orderItems } from "@/db/schema";
-import { eq, inArray } from "drizzle-orm";
+import { eq } from "drizzle-orm";
+import { PushSubscribe } from "@/components/push/push-subscribe";
 
 export const metadata: Metadata = { title: "Order Confirmed" };
 
@@ -58,11 +59,15 @@ export default async function ConfirmationPage({ searchParams }: Props) {
           <h1 className="font-heading text-3xl font-bold mb-3">
             Order Confirmed!
           </h1>
-          <p className="text-muted-foreground leading-relaxed mb-6">
+          <p className="text-muted-foreground leading-relaxed mb-4">
             We&apos;ve received your order. You&apos;ll get a confirmation
-            email shortly. We&apos;ll notify you when it&apos;s ready for
-            pickup!
+            email shortly.
           </p>
+          {order && (
+            <div className="mb-6">
+              <PushSubscribe email={order.customerEmail} />
+            </div>
+          )}
         </>
       )}
 

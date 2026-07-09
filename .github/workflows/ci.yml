@@ -36,8 +36,8 @@ jobs:
         env:
           DATABASE_URL: postgresql://dummy:dummy@localhost/dummy
 
-  test:
-    name: Unit tests
+  unit-tests:
+    name: Unit tests (Vitest)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -56,3 +56,56 @@ jobs:
 
       - name: Run unit tests
         run: pnpm test
+
+  accessibility:
+    name: Accessibility (axe-core + Playwright)
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://dummy:dummy@localhost/dummy
+      AUTH_SECRET: ci-secret-not-real
+      RESEND_API_KEY: re_placeholder
+      CLOVER_MERCHANT_ID: placeholder
+      CLOVER_API_KEY: placeholder
+      CLOVER_WEBHOOK_SECRET: placeholder
+      VAPID_PUBLIC_KEY: placeholder
+      VAPID_PRIVATE_KEY: placeholder
+      NEXT_PUBLIC_VAPID_PUBLIC_KEY: placeholder
+      R2_ACCOUNT_ID: placeholder
+      R2_ACCESS_KEY_ID: placeholder
+      R2_SECRET_ACCESS_KEY: placeholder
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install chromium --with-deps
+
+      - name: Build Next.js
+        run: pnpm build
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+
+      - name: Start production server
+        run: pnpm start &
+        env:
+          PORT: 3000
+
+      - name: Wait for server
+        run: npx wait-on http://localhost:3000 --timeout 30000
+
+      - name: Run accessibility tests
+        run: pnpm exec playwright test e2e/accessibility.spec.ts --project=chromium
+        env:
+          PLAYWRIGHT_BASE_URL: http://localhost:3000
