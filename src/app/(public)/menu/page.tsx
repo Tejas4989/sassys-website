@@ -5,11 +5,20 @@ import { Badge } from "@/components/ui/badge";
 import { getMenuWithCategories } from "@/lib/data/menu";
 import { getPublicUrl } from "@/lib/r2";
 import { ArrowRight } from "lucide-react";
+import { JsonLd, breadcrumbSchema } from "@/components/seo/json-ld";
+
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://mysassys.com";
 
 export const metadata: Metadata = {
   title: "Our Menu",
   description:
-    "Browse Sassy's full menu — pizza, subs, fried chicken, fresh baked breads, appetizers, and more.",
+    "Browse Sassy's full menu — pizza, subs, fried chicken, fresh baked breads, appetizers, and more. Order online for pickup in Thorndale, ON.",
+  alternates: { canonical: `${BASE}/menu` },
+  openGraph: {
+    title: "Our Menu | Sassy's Bakery",
+    description: "Pizza, subs, fried chicken, fresh breads, deli, ice cream and more in Thorndale, ON.",
+    url: `${BASE}/menu`,
+  },
 };
 
 export const revalidate = 60;
@@ -22,6 +31,8 @@ export default async function MenuPage() {
   const categories = await getMenuWithCategories();
 
   return (
+    <>
+    <JsonLd data={breadcrumbSchema([{ name: "Home", url: "/" }, { name: "Menu", url: "/menu" }])} />
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
       {/* Header */}
       <div className="text-center mb-12">
@@ -126,5 +137,6 @@ export default async function MenuPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

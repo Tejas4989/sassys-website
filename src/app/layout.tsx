@@ -17,6 +17,8 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
+const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://mysassys.com";
+
 export const metadata: Metadata = {
   title: {
     default: "Sassy's Bakery — Thorndale, ON",
@@ -24,11 +26,28 @@ export const metadata: Metadata = {
   },
   description:
     "Family-owned bakery, deli & pizzeria in Thorndale, Ontario. Fresh baked breads, pizza, deli meats, ice cream, and more.",
-  keywords: ["bakery", "Thorndale", "Ontario", "pizza", "bread", "deli"],
+  keywords: ["bakery", "Thorndale", "Ontario", "pizza", "bread", "deli", "order online", "pickup", "wholesale"],
+  metadataBase: new URL(BASE),
   openGraph: {
     type: "website",
     locale: "en_CA",
     siteName: "Sassy's Bakery",
+    images: [
+      {
+        url: `/api/og?title=Sassy%27s+Bakery&subtitle=Thorndale%2C+Ontario`,
+        width: 1200,
+        height: 630,
+        alt: "Sassy's Bakery — Thorndale, ON",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
 };
 

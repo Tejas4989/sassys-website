@@ -3,6 +3,21 @@
 // The (public) route group provides shared layout only for /menu, /gallery, /contact, /order.
 import { PublicNav } from "@/components/public/nav";
 import { PublicFooter } from "@/components/public/footer";
+import { JsonLd, localBusinessSchema } from "@/components/seo/json-ld";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Sassy's Bakery — Fresh Bread, Pizza & Deli in Thorndale, ON",
+  description:
+    "Family-owned bakery, deli & pizzeria in Thorndale, Ontario since 1990. Fresh baked breads, pizza, subs, fried chicken, Shaw's Ice Cream, and wholesale bakery services. Order online for pickup.",
+  alternates: { canonical: process.env.NEXT_PUBLIC_APP_URL ?? "https://mysassys.com" },
+  openGraph: {
+    title: "Sassy's Bakery — Thorndale, ON",
+    description: "Fresh baked breads, pizza, deli, ice cream. Family-owned since 1990.",
+    url: process.env.NEXT_PUBLIC_APP_URL ?? "https://mysassys.com",
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Sassy's Bakery in Thorndale, ON" }],
+  },
+};
 import Link from "next/link";
 import { ArrowRight, Clock, MapPin, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +27,7 @@ import { getHours, DAY_NAMES } from "@/lib/data/hours";
 import { getGalleryPhotos } from "@/lib/data/gallery";
 
 export const revalidate = 60;
+// metadata is defined above — this export is still needed for the page
 
 const HIGHLIGHTS = [
   { emoji: "🍞", label: "Fresh Baked Bread & Sweets" },
@@ -34,6 +50,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <JsonLd data={localBusinessSchema()} />
       <PublicNav />
       <main className="flex-1">
         {/* Hero */}
