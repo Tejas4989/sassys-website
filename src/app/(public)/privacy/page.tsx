@@ -170,7 +170,7 @@ export default function PrivacyPage() {
           <h2 className="font-heading text-xl font-semibold mb-3">10. Security</h2>
           <p>
             We use industry-standard safeguards including TLS encryption in transit, hashed
-            password storage (argon2), rate-limited login endpoints, and audit logging for
+            password storage (salted PBKDF2), rate-limited login endpoints, and audit logging for
             administrative actions. No system is perfectly secure; we will notify affected
             individuals in the event of a privacy breach as required by law.
           </p>

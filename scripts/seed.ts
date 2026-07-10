@@ -11,7 +11,7 @@ import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "../src/db/schema";
 import { eq } from "drizzle-orm";
-import { hash } from "argon2";
+import { hashPassword } from "../src/lib/password";
 
 const url = process.env.DATABASE_URL;
 if (!url) {
@@ -259,7 +259,7 @@ async function seed() {
     .where(eq(schema.users.email, adminEmail));
 
   if (existing.length === 0) {
-    const adminPassword = await hash("Sassys2024!");
+    const adminPassword = await hashPassword("Sassys2024!");
     await db.insert(schema.users).values({
       email: adminEmail,
       passwordHash: adminPassword,

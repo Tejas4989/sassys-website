@@ -1,12 +1,15 @@
 /**
  * Tests for the wholesale passcode flow:
  * - Passcode generation always produces 6 digits
- * - Passcode hashing is deterministic (argon2)
+ * - Passcode hashing is salted (PBKDF2 via Web Crypto)
  * - Passcode validation rejects wrong codes
  */
 
 import { describe, it, expect } from "vitest";
-import { hash, verify } from "argon2";
+import { hashPassword as hash, verifyPassword } from "@/lib/password";
+
+// Adapter to keep the (hash, plain) argument order used below.
+const verify = (hashed: string, plain: string) => verifyPassword(plain, hashed);
 
 function generatePasscode(): string {
   const digits = new Uint8Array(6);

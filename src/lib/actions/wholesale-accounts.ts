@@ -6,7 +6,7 @@ import { db } from "@/db/client";
 import { users, wholesaleCustomers, adminAuditLog } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { hash, verify } from "argon2";
+import { hashPassword } from "@/lib/password";
 import { auth } from "@/lib/auth";
 import { sendWholesaleWelcome } from "@/lib/email";
 
@@ -47,7 +47,7 @@ export async function createWholesaleAccount(fd: FormData) {
   });
 
   const passcode = generatePasscode();
-  const passcodeHash = await hash(passcode);
+  const passcodeHash = await hashPassword(passcode);
 
   // Create user record
   const [user] = await db
@@ -171,7 +171,7 @@ export async function rotatePasscode(customerId: string) {
   if (!customer) throw new Error("Not found");
 
   const newPasscode = generatePasscode();
-  const passcodeHash = await hash(newPasscode);
+  const passcodeHash = await hashPassword(newPasscode);
 
   await db
     .update(wholesaleCustomers)
@@ -198,7 +198,7 @@ export async function changeOwnPasscode(newPasscode: string) {
 
   if (!/^\d{6}$/.test(newPasscode)) throw new Error("Passcode must be exactly 6 digits");
 
-  const passcodeHash = await hash(newPasscode);
+  const passcodeHash = await hashPassword(newPasscode);
   await db
     .update(wholesaleCustomers)
     .set({ passcodeHash, passcodeMustChange: false, updatedAt: new Date() })

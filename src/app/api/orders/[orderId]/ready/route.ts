@@ -6,7 +6,6 @@ import { auth } from "@/lib/auth";
 import { sendOrderReady } from "@/lib/email";
 import { sendPushNotification } from "@/lib/push";
 
-export const runtime = "edge";
 
 export async function POST(
   _req: NextRequest,

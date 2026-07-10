@@ -4,7 +4,6 @@ import { orders, orderItems } from "@/db/schema";
 import { eq, and, gte, inArray } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 
-export const runtime = "edge";
 
 export async function GET(req: NextRequest) {
   const session = await auth();

@@ -1,21 +1,33 @@
 import webpush from "web-push";
 
-webpush.setVapidDetails(
-  "mailto:inquiry@mysassys.com",
-  process.env.VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-);
-
 export interface PushSubscriptionData {
   endpoint: string;
   p256dh: string;
   auth: string;
 }
 
+let vapidReady = false;
+
+/**
+ * Configure VAPID lazily on first send. Doing this at module load throws during
+ * the build (and cold-starts without secrets) because `setVapidDetails`
+ * validates the key eagerly. Returns false if keys aren't configured.
+ */
+function ensureVapid(): boolean {
+  if (vapidReady) return true;
+  const publicKey = process.env.VAPID_PUBLIC_KEY;
+  const privateKey = process.env.VAPID_PRIVATE_KEY;
+  if (!publicKey || !privateKey) return false;
+  webpush.setVapidDetails("mailto:inquiry@mysassys.com", publicKey, privateKey);
+  vapidReady = true;
+  return true;
+}
+
 export async function sendPushNotification(
   subscription: PushSubscriptionData,
   payload: { title: string; body: string; url?: string }
 ) {
+  if (!ensureVapid()) return false;
   try {
     await webpush.sendNotification(
       {

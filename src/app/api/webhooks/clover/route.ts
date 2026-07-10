@@ -5,7 +5,6 @@ import { eq } from "drizzle-orm";
 import { verifyCloverWebhookSignatureAsync } from "@/lib/clover";
 import { sendOrderReady } from "@/lib/email";
 
-export const runtime = "edge";
 
 export async function POST(req: NextRequest) {
   const rawBody = await req.text();

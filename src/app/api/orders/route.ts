@@ -6,7 +6,6 @@ import { z } from "zod";
 import { createCloverOrder } from "@/lib/clover";
 import { sendOrderConfirmation, sendAdminCateringAlert } from "@/lib/email";
 
-export const runtime = "edge";
 
 const CATERING_THRESHOLD_CENTS = 20000; // $200
 const CATERING_ADVANCE_HOURS = 48;

@@ -3,7 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import { db } from "@/db/client";
 import { users, wholesaleCustomers, loginAttempts } from "@/db/schema";
 import { eq, and, gte, count } from "drizzle-orm";
-import { verify } from "argon2";
+import { verifyPassword } from "@/lib/password";
 
 const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
 const MAX_ATTEMPTS = 5;
@@ -68,7 +68,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         }
 
-        const valid = await verify(user.passwordHash, password);
+        const valid = await verifyPassword(password, user.passwordHash);
         await recordAttempt(email, "unknown", valid);
         if (!valid) return null;
 
@@ -106,7 +106,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         }
 
-        const valid = await verify(row.customer.passcodeHash, passcode);
+        const valid = await verifyPassword(passcode, row.customer.passcodeHash);
         await recordAttempt(email, "unknown", valid);
         if (!valid) return null;
 
