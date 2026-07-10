@@ -32,6 +32,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+.dev.vars
 
 # vercel
 .vercel
@@ -39,4 +41,20 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-.env.local
+
+# cloudflare / opennext build output
+.open-next/
+.wrangler/
+.dev.vars.*
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# editors / OS
+.vscode/
+.idea/
+*.swp
+Thumbs.db

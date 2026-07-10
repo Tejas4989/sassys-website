@@ -8,8 +8,8 @@ export default function manifest(): MetadataRoute.Manifest {
       "Family-owned bakery, deli & pizzeria in Thorndale, Ontario. Order online for pickup.",
     start_url: "/",
     display: "standalone",
-    background_color: "#f7f0e6",
-    theme_color: "#6b3f1f",
+    background_color: "#FBF4E8",
+    theme_color: "#123D22",
     icons: [
       {
         src: "/icon-192.png",

@@ -1,36 +1,36 @@
-import { unstable_cache } from "next/cache";
 import { db } from "@/db/client";
 import { galleryPhotos } from "@/db/schema";
 import { and, eq, asc } from "drizzle-orm";
 import { getPublicUrl } from "@/lib/r2";
+import { FALLBACK_GALLERY, type GalleryPhotoWithUrl } from "./fallback-content";
 
-export const getGalleryPhotos = unstable_cache(
-  async (category?: string) => {
-    const conditions = [eq(galleryPhotos.isActive, true)];
+export async function getGalleryPhotos(category?: string): Promise<GalleryPhotoWithUrl[]> {
+  try {
+    const conditions: Parameters<typeof and>[] = [
+      [eq(galleryPhotos.isActive, true)],
+    ];
     if (category) {
-      conditions.push(
-        eq(
-          galleryPhotos.category,
-          category as
-            | "cakes"
-            | "breads"
-            | "storefront"
-            | "catering"
-        )
+      conditions[0].push(
+        eq(galleryPhotos.category, category as "cakes" | "breads" | "storefront" | "catering")
       );
     }
+
     const photos = await db
       .select()
       .from(galleryPhotos)
-      .where(and(...conditions))
-      .orderBy(asc(galleryPhotos.sortOrder))
-      .catch(() => []);
+      .where(and(...conditions[0]))
+      .orderBy(asc(galleryPhotos.sortOrder));
 
-    return photos.map((p) => ({
-      ...p,
-      url: getPublicUrl(p.imageKey),
-    }));
-  },
-  ["gallery"],
-  { revalidate: 300, tags: ["gallery"] }
-);
+    if (photos.length === 0) {
+      return category
+        ? FALLBACK_GALLERY.filter((p) => p.category === category)
+        : FALLBACK_GALLERY;
+    }
+
+    return photos.map((p) => ({ ...p, url: getPublicUrl(p.imageKey) }));
+  } catch {
+    return category
+      ? FALLBACK_GALLERY.filter((p) => p.category === category)
+      : FALLBACK_GALLERY;
+  }
+}

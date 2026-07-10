@@ -122,6 +122,24 @@ export async function sendWholesaleOrderConfirmation(opts: {
   });
 }
 
+export async function sendContactMessage(opts: {
+  name: string;
+  email: string;
+  message: string;
+}) {
+  await resend.emails.send({
+    from: FROM,
+    to: process.env.ADMIN_EMAIL ?? "inquiry@mysassys.com",
+    replyTo: opts.email,
+    subject: `New contact message from ${opts.name}`,
+    html: `
+      <h2>New message via mysassys.com</h2>
+      <p><strong>From:</strong> ${opts.name} (${opts.email})</p>
+      <p style="white-space:pre-wrap">${opts.message}</p>
+    `,
+  });
+}
+
 export async function sendAdminCateringAlert(opts: {
   orderId: string;
   customerName: string;

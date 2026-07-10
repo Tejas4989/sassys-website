@@ -1,228 +1,177 @@
-// Home page lives here — NOT in (public)/page.tsx
-// Having both would create a duplicate route for "/" in Next.js.
-// The (public) route group provides shared layout only for /menu, /gallery, /contact, /order.
+// Home page lives here — NOT in (public)/page.tsx (that would duplicate the "/" route).
+// The (public) route group provides the shared nav/footer layout only for
+// /menu, /gallery, /about, /contact, /order.
+import type { Metadata } from "next";
+import Link from "next/link";
 import { PublicNav } from "@/components/public/nav";
 import { PublicFooter } from "@/components/public/footer";
+import { PhotoSlot } from "@/components/public/photo-slot";
 import { JsonLd, localBusinessSchema } from "@/components/seo/json-ld";
-import type { Metadata } from "next";
+import { getActiveSpecials } from "@/lib/data/specials";
+import { HOME_CATEGORIES, SPECIAL_ACCENTS } from "@/lib/data/fallback-content";
 
 export const metadata: Metadata = {
-  title: "Sassy's Bakery — Fresh Bread, Pizza & Deli in Thorndale, ON",
+  title: "Sassy's Bakery — Bakery, Deli & Pizzeria in Thorndale, ON",
   description:
-    "Family-owned bakery, deli & pizzeria in Thorndale, Ontario since 1990. Fresh baked breads, pizza, subs, fried chicken, Shaw's Ice Cream, and wholesale bakery services. Order online for pickup.",
+    "Family-owned bakery, deli & pizzeria in Thorndale, Ontario. Hand-built pizzas, stacked subs, fried chicken and fresh-baked goods — made to order, ready when you are.",
   alternates: { canonical: process.env.NEXT_PUBLIC_APP_URL ?? "https://mysassys.com" },
-  openGraph: {
-    title: "Sassy's Bakery — Thorndale, ON",
-    description: "Fresh baked breads, pizza, deli, ice cream. Family-owned since 1990.",
-    url: process.env.NEXT_PUBLIC_APP_URL ?? "https://mysassys.com",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Sassy's Bakery in Thorndale, ON" }],
-  },
 };
-import Link from "next/link";
-import { ArrowRight, Clock, MapPin, Phone } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { getActiveSpecials } from "@/lib/data/specials";
-import { getHours, DAY_NAMES } from "@/lib/data/hours";
-import { getGalleryPhotos } from "@/lib/data/gallery";
 
 export const revalidate = 60;
-// metadata is defined above — this export is still needed for the page
-
-const HIGHLIGHTS = [
-  { emoji: "🍞", label: "Fresh Baked Bread & Sweets" },
-  { emoji: "🍕", label: "Pizza & Subs" },
-  { emoji: "🍗", label: "Southern Fried Chicken" },
-  { emoji: "🧀", label: "Deli Meats & Cheeses" },
-  { emoji: "🍦", label: "Shaw's Ice Cream" },
-  { emoji: "📦", label: "Wholesale Bakery" },
-];
 
 export default async function HomePage() {
-  const [specials, hoursData, photos] = await Promise.all([
-    getActiveSpecials(),
-    getHours(),
-    getGalleryPhotos(),
-  ]);
-
-  const todayIdx = new Date().getDay();
-  const todayHours = hoursData.regular.find((h) => h.dayOfWeek === todayIdx);
+  const specials = await getActiveSpecials();
 
   return (
     <>
       <JsonLd data={localBusinessSchema()} />
       <PublicNav />
-      <main className="flex-1">
-        {/* Hero */}
-        <section className="relative overflow-hidden" style={{ backgroundColor: "oklch(0.32 0.06 45)", color: "oklch(0.97 0.012 85)" }}>
-          <div
-            className="absolute inset-0 opacity-10"
-            style={{
-              backgroundImage:
-                "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
-            }}
-          />
-          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-24 md:py-32">
-            <p className="text-sm font-medium tracking-widest uppercase opacity-70 mb-4">
-              Thorndale, Ontario
-            </p>
-            <h1 className="font-heading text-5xl md:text-7xl font-bold leading-tight mb-6">
-              Baked with Love,
+      <main className="flex-1 font-body text-ink">
+        {/* ── Hero ── */}
+        <section className="mx-auto max-w-[1280px] px-5 nav:px-7 pt-5 nav:pt-9 pb-10 nav:pb-16 grid grid-cols-1 nav:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] gap-8 nav:gap-14 items-center">
+          {/* Text */}
+          <div className="order-2 nav:order-1 relative">
+            <span className="inline-flex items-center gap-2 bg-forest text-cream font-display font-bold text-[13px] px-4 py-[7px] rounded-full mb-[22px]">
+              Thorndale, Ontario&nbsp; · &nbsp;Family Owned
+            </span>
+            <h1 className="font-display font-extrabold text-[38px] nav:text-[58px] leading-[1.05] text-ink mb-5">
+              Bakery. Deli.
               <br />
-              Served with Heart.
+              Pizzeria.
+              <br />
+              <span className="text-sassy-red">All Sassy&apos;s.</span>
             </h1>
-            <p className="text-lg md:text-xl opacity-80 max-w-xl mb-8 leading-relaxed">
-              Family-owned bakery, deli & pizzeria in the heart of Thorndale
-              since 1990. Fresh bread every morning, pizza all day, and a whole
-              lot more.
+            <p className="text-base nav:text-[18px] leading-relaxed text-ink-muted max-w-[460px] mb-[30px]">
+              Hand-built pizzas, stacked subs, fried chicken and fresh-baked
+              goods — made to order, ready when you are.
             </p>
-            <div className="flex flex-wrap gap-3">
-              <Button asChild size="lg" className="border-0 font-semibold" style={{ backgroundColor: "oklch(0.72 0.13 65)", color: "oklch(0.22 0.05 45)" }}>
-                <Link href="/order">
-                  Order Online <ArrowRight className="ml-2 w-4 h-4" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="border-white/40 hover:bg-white/10" style={{ color: "oklch(0.97 0.012 85)" }}>
-                <Link href="/menu">See Our Menu</Link>
-              </Button>
+            <div className="flex gap-3.5 flex-wrap">
+              <Link
+                href="/order"
+                className="bg-sassy-red text-cream-hi rounded-full px-[30px] py-4 font-display font-bold text-[17px] shadow-[0_4px_0_var(--color-red-dark)] hover:brightness-105 transition"
+              >
+                Order Pickup
+              </Link>
+              <Link
+                href="/menu"
+                className="bg-cream text-ink border-2 border-ink rounded-full px-7 py-3.5 font-display font-bold text-[17px] hover:bg-cream-alt transition-colors"
+              >
+                View Full Menu
+              </Link>
             </div>
-            {todayHours && (
-              <div className="mt-8 inline-flex items-center gap-2 text-sm opacity-70">
-                <Clock className="w-4 h-4" />
-                {todayHours.isClosed ? (
-                  <span>Closed today</span>
-                ) : (
-                  <span>Open today: {todayHours.opensAt} – {todayHours.closesAt}</span>
-                )}
-              </div>
-            )}
+          </div>
+
+          {/* Image */}
+          <div className="order-1 nav:order-2 relative">
+            <div className="absolute -top-[22px] -left-[22px] w-[92%] h-[92%] rounded-[28px] bg-cream-alt z-0" />
+            <div className="absolute top-3.5 right-3.5 w-[88px] h-[88px] rounded-full bg-gold flex items-center justify-center text-center font-display font-bold text-[12px] text-ink rotate-[8deg] z-[2] leading-tight p-2">
+              Fresh Since Day One
+            </div>
+            <PhotoSlot
+              label="Hero photo — pizza / storefront"
+              className="w-full h-[260px] nav:h-[440px] rounded-[28px] relative z-[1] shadow-[0_18px_40px_rgba(43,33,24,0.18)]"
+            />
           </div>
         </section>
 
-        {/* What we offer */}
-        <section className="py-16 max-w-6xl mx-auto px-4 sm:px-6">
-          <h2 className="font-heading text-3xl md:text-4xl font-bold text-center mb-2">
-            Something for Everyone
-          </h2>
-          <p className="text-center text-muted-foreground mb-10">
-            From sunrise breads to late-night pizza — we&apos;ve got you covered.
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {HIGHLIGHTS.map((h) => (
-              <div key={h.label} className="flex items-center gap-3 p-4 rounded-xl bg-card border border-border">
-                <span className="text-2xl">{h.emoji}</span>
-                <span className="text-sm font-medium">{h.label}</span>
-              </div>
-            ))}
+        {/* ── Weekly specials ── */}
+        <section className="mx-auto max-w-[1280px] px-5 nav:px-7 py-11 nav:py-16">
+          <div className="flex items-baseline justify-between mb-[26px] flex-wrap gap-2.5">
+            <h2 className="font-editorial font-semibold text-2xl nav:text-[32px]">
+              This week at Sassy&apos;s
+            </h2>
+            <span className="text-sm text-label">Specials rotate weekly — ask in store</span>
           </div>
-        </section>
-
-        {/* Weekly specials */}
-        {specials.length > 0 && (
-          <section className="py-16 bg-secondary/50">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6">
-              <h2 className="font-heading text-3xl md:text-4xl font-bold mb-2">Weekly Specials</h2>
-              <p className="text-muted-foreground mb-8">Updated every week — check back often.</p>
-              <div className="grid md:grid-cols-2 gap-6">
-                {specials.map((s) => (
-                  <Card key={s.id} className="border-border">
-                    <CardContent className="p-6">
-                      <h3 className="font-heading text-xl font-semibold mb-3">{s.title}</h3>
-                      <div className="text-sm text-muted-foreground leading-relaxed" dangerouslySetInnerHTML={{ __html: s.body }} />
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* About */}
-        <section className="py-16 max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="font-heading text-3xl md:text-4xl font-bold mb-4">A Family Tradition</h2>
-              <p className="text-muted-foreground leading-relaxed mb-4">
-                What started as a simple pizza shop has grown into a full bakery, deli, and pizzeria loved by Thorndale and the surrounding communities for decades.
-              </p>
-              <p className="text-muted-foreground leading-relaxed mb-6">
-                Our commercial bakery serves about a 40-mile radius, supplying fresh baked goods to grocery stores, restaurants, golf courses, and caterers across the region.
-              </p>
-              <Button asChild variant="outline"><Link href="/contact">Get in Touch</Link></Button>
-            </div>
-            <div className="bg-secondary rounded-2xl aspect-square flex items-center justify-center overflow-hidden">
-              {photos[0] ? (
-                <img src={photos[0].url} alt={photos[0].caption ?? "Sassy's Bakery"} className="rounded-2xl w-full h-full object-cover" />
-              ) : (
-                <span className="text-6xl">🏠</span>
-              )}
-            </div>
-          </div>
-        </section>
-
-        {/* Hours + location */}
-        <section className="py-16" style={{ backgroundColor: "oklch(0.32 0.06 45)", color: "oklch(0.97 0.012 85)" }}>
-          <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <div className="grid md:grid-cols-2 gap-12">
-              <div>
-                <h2 className="font-heading text-2xl font-bold mb-6 flex items-center gap-2">
-                  <Clock className="w-6 h-6 opacity-70" /> Hours
-                </h2>
-                <ul className="space-y-2">
-                  {hoursData.regular.map((h) => (
-                    <li key={h.dayOfWeek} className={`flex justify-between text-sm py-1 border-b last:border-0 ${h.dayOfWeek === todayIdx ? "font-semibold" : "opacity-80"}`} style={{ borderColor: "oklch(0.42 0.07 45)" }}>
-                      <span>{DAY_NAMES[h.dayOfWeek]}</span>
-                      <span>{h.isClosed ? "Closed" : `${h.opensAt} – ${h.closesAt}`}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h2 className="font-heading text-2xl font-bold mb-6 flex items-center gap-2">
-                  <MapPin className="w-6 h-6 opacity-70" /> Find Us
-                </h2>
-                <p className="opacity-80 mb-4">225 King St, Thorndale, Ontario N0M 2P0</p>
-                <a href="tel:+15194611234" className="flex items-center gap-2 text-sm opacity-80 hover:opacity-100 mb-6">
-                  <Phone className="w-4 h-4" /> (519) 461-1234
-                </a>
-                <Button asChild className="border-0" style={{ backgroundColor: "oklch(0.72 0.13 65)", color: "oklch(0.22 0.05 45)" }}>
-                  <a href="https://maps.google.com/?q=225+King+St+Thorndale+ON" target="_blank" rel="noopener noreferrer">
-                    Get Directions
-                  </a>
-                </Button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Gallery preview */}
-        {photos.length > 0 && (
-          <section className="py-16 max-w-6xl mx-auto px-4 sm:px-6">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="font-heading text-3xl font-bold">From Our Kitchen</h2>
-              <Button asChild variant="outline" size="sm">
-                <Link href="/gallery">View All <ArrowRight className="ml-1 w-3 h-3" /></Link>
-              </Button>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {photos.slice(0, 8).map((p) => (
-                <div key={p.id} className="aspect-square rounded-xl overflow-hidden bg-secondary">
-                  <img src={p.url} alt={p.caption ?? "Sassy's Bakery"} className="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+          <div className="grid grid-cols-1 nav:grid-cols-3 gap-[22px]">
+            {specials.map((sp, i) => {
+              const accent = sp.accent ?? SPECIAL_ACCENTS[i % SPECIAL_ACCENTS.length];
+              return (
+                <div
+                  key={sp.id}
+                  className="bg-white border border-line rounded-2xl p-[22px] border-t-4"
+                  style={{ borderTopColor: accent }}
+                >
+                  <div className="font-display font-bold text-[12px] text-sassy-red uppercase tracking-wide mb-2">
+                    {sp.tag ?? "This Week"}
+                  </div>
+                  <div className="font-editorial font-semibold text-[21px] mb-2">{sp.title}</div>
+                  <div
+                    className="text-[15px] text-ink-soft leading-normal"
+                    dangerouslySetInnerHTML={{ __html: sp.body }}
+                  />
                 </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* ── What we make ── */}
+        <section className="bg-cream-alt py-11 nav:py-16">
+          <div className="mx-auto max-w-[1280px] px-5 nav:px-7">
+            <h2 className="font-editorial font-semibold text-2xl nav:text-[32px] mb-[30px]">
+              What we make
+            </h2>
+            <div className="grid grid-cols-2 nav:grid-cols-6 gap-[18px]">
+              {HOME_CATEGORIES.map((cat) => (
+                <Link
+                  key={cat.label}
+                  href={cat.slug ? `/menu?cat=${cat.slug}` : "/menu"}
+                  className="group bg-white rounded-2xl overflow-hidden border border-line transition hover:-translate-y-1 hover:shadow-[0_10px_22px_rgba(43,33,24,0.14)]"
+                >
+                  <PhotoSlot label="Photo" className="w-full h-[120px]" />
+                  <div className="p-3.5 font-display font-bold text-[15px] text-center">
+                    {cat.label}
+                  </div>
+                </Link>
               ))}
             </div>
-          </section>
-        )}
+          </div>
+        </section>
 
-        {/* CTA */}
-        <section className="py-16 bg-accent/10 border-y border-border">
-          <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
-            <h2 className="font-heading text-3xl font-bold mb-4">Ready to Order?</h2>
-            <p className="text-muted-foreground mb-6">Place your pickup order online and we&apos;ll have it ready for you.</p>
-            <div className="flex flex-wrap gap-3 justify-center">
-              <Button asChild size="lg"><Link href="/order">Order Now</Link></Button>
-              <Button asChild size="lg" variant="outline"><Link href="/menu">Browse Menu</Link></Button>
+        {/* ── About snippet ── */}
+        <section className="mx-auto max-w-[1280px] px-5 nav:px-7 py-11 nav:py-16 grid grid-cols-1 nav:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-8 nav:gap-14 items-center">
+          <PhotoSlot
+            label="Storefront / family photo"
+            className="w-full h-[240px] nav:h-[360px] rounded-[20px]"
+          />
+          <div>
+            <div className="font-display font-bold text-[13px] text-forest uppercase tracking-wide mb-3">
+              Our story
             </div>
+            <h2 className="font-editorial font-semibold text-[22px] nav:text-[30px] mb-[18px]">
+              A family kitchen on King Street
+            </h2>
+            <p className="text-base leading-[1.7] text-ink-muted mb-4">
+              Sassy&apos;s has been Thorndale&apos;s stop for pizza night, deli
+              sandwiches, fried chicken dinners and fresh baking — everything
+              built to order, the way you want it.
+            </p>
+            <Link
+              href="/about"
+              className="font-display font-bold text-base text-sassy-red hover:brightness-110"
+            >
+              Read our story →
+            </Link>
+          </div>
+        </section>
+
+        {/* ── Wholesale teaser ── */}
+        <section className="bg-forest px-5 nav:px-7 py-9 nav:py-[50px]">
+          <div className="mx-auto max-w-[1280px] flex flex-col nav:flex-row items-start nav:items-center justify-between gap-6">
+            <div>
+              <div className="font-display font-bold text-[13px] text-gold uppercase tracking-wide mb-2">
+                For stores &amp; restaurants
+              </div>
+              <h2 className="font-editorial font-semibold text-[22px] nav:text-[30px] text-cream m-0">
+                Wholesale breads &amp; baking, delivered on your schedule.
+              </h2>
+            </div>
+            <Link
+              href="/wholesale/login"
+              className="bg-gold text-forest-dark rounded-full px-7 py-[15px] font-display font-bold text-base whitespace-nowrap hover:brightness-105 transition"
+            >
+              Wholesale Login →
+            </Link>
           </div>
         </section>
       </main>

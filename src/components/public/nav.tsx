@@ -2,102 +2,129 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { Menu, X, Phone } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
-const links = [
+const NAV_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/menu", label: "Our Menu" },
+  { href: "/menu", label: "Menu" },
   { href: "/gallery", label: "Gallery" },
-  { href: "/order", label: "Order Online" },
+  { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
+];
+
+const MOBILE_LINKS = [
+  ...NAV_LINKS,
+  { href: "/order", label: "Order Pickup" },
+  { href: "/wholesale/login", label: "Wholesale Login" },
 ];
 
 export function PublicNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
+  // Auto-close the mobile dropdown when the viewport crosses to desktop.
+  useEffect(() => {
+    const onResize = () => {
+      if (window.innerWidth >= 860) setOpen(false);
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
+
   return (
-    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="flex items-center justify-between h-16">
+    <>
+      {/* Utility ribbon — scrolls away with the page (not sticky) */}
+      <div className="bg-forest-dark text-gold text-center font-display font-semibold text-xs tracking-wide px-3 py-[7px]">
+        Family owned since day one&nbsp; · &nbsp;225 King St, Thorndale ON
+      </div>
+
+      {/* Sticky nav */}
+      <header className="sticky top-0 z-50 bg-cream/95 backdrop-blur-[6px] border-b-2 border-line">
+        <div className="mx-auto max-w-[1280px] px-5 py-2.5 flex items-center justify-between gap-4">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 shrink-0">
-            <span className="font-heading text-2xl font-bold text-primary">
-              Sassy&apos;s
-            </span>
-            <span className="hidden sm:block text-sm text-muted-foreground font-medium tracking-wide">
-              Bakery & Deli
-            </span>
+          <Link href="/" className="flex items-center shrink-0" aria-label="Sassy's Bakery — home">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/sassys-logo.png"
+              alt="Sassy's Bakery"
+              className="h-11 nav:h-[58px] w-auto block"
+            />
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-1">
-            {links.map((l) => (
+          <nav className="hidden nav:flex items-center gap-1 font-body text-[15px] font-semibold flex-wrap">
+            {NAV_LINKS.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
-                className={cn(
-                  "px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                  pathname === l.href
-                    ? "text-primary font-semibold"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-                )}
+                className={`rounded-full px-4 py-[9px] transition-colors ${
+                  isActive(l.href)
+                    ? "bg-ink text-cream"
+                    : "text-ink hover:bg-cream-alt"
+                }`}
               >
                 {l.label}
               </Link>
             ))}
           </nav>
 
-          {/* Phone + mobile toggle */}
-          <div className="flex items-center gap-3">
-            <a
-              href="tel:+15194611234"
-              className="hidden sm:flex items-center gap-1.5 text-sm font-medium text-primary hover:text-accent transition-colors"
+          {/* Desktop CTAs */}
+          <div className="hidden nav:flex items-center gap-2.5 shrink-0">
+            <Link
+              href="/wholesale/login"
+              className="font-body font-semibold text-sm text-ink px-1.5 py-2 hover:text-sassy-red transition-colors"
             >
-              <Phone className="w-4 h-4" />
-              (519) 461-1234
-            </a>
+              Wholesale Login
+            </Link>
+            <Link
+              href="/order"
+              className="bg-sassy-red text-cream-hi rounded-full px-[22px] py-[11px] font-display font-bold text-[15px] whitespace-nowrap shadow-[0_3px_0_var(--color-red-dark)] hover:brightness-105 transition"
+            >
+              Order Pickup
+            </Link>
+          </div>
+
+          {/* Mobile CTAs */}
+          <div className="flex nav:hidden items-center gap-2.5">
+            <Link
+              href="/order"
+              className="bg-sassy-red text-cream-hi rounded-full px-4 py-[9px] font-display font-bold text-[13px] whitespace-nowrap"
+            >
+              Order
+            </Link>
             <button
-              className="md:hidden p-2 rounded-md hover:bg-secondary"
-              onClick={() => setOpen(!open)}
-              aria-label="Toggle menu"
+              type="button"
+              onClick={() => setOpen((o) => !o)}
+              aria-label="Menu"
               aria-expanded={open}
+              className="border-2 border-ink rounded-lg w-10 h-10 flex items-center justify-center text-lg text-ink shrink-0"
             >
-              {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {open ? "✕" : "☰"}
             </button>
           </div>
         </div>
 
-        {/* Mobile nav */}
+        {/* Mobile dropdown (inline panel, pushes content down) */}
         {open && (
-          <nav className="md:hidden py-3 border-t border-border space-y-1">
-            {links.map((l) => (
+          <div className="nav:hidden border-t border-line px-5 pt-2.5 pb-[18px] flex flex-col gap-0.5">
+            {MOBILE_LINKS.map((l) => (
               <Link
                 key={l.href}
                 href={l.href}
-                className={cn(
-                  "block px-3 py-2 rounded-md text-sm font-medium",
-                  pathname === l.href
-                    ? "bg-secondary text-primary font-semibold"
-                    : "text-muted-foreground hover:text-foreground hover:bg-secondary"
-                )}
                 onClick={() => setOpen(false)}
+                className={`rounded-[10px] px-3 py-[13px] font-body font-semibold text-base text-ink text-left ${
+                  isActive(l.href) ? "bg-cream-alt" : ""
+                }`}
               >
                 {l.label}
               </Link>
             ))}
-            <a
-              href="tel:+15194611234"
-              className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-primary"
-            >
-              <Phone className="w-4 h-4" />
-              (519) 461-1234
-            </a>
-          </nav>
+          </div>
         )}
-      </div>
-    </header>
+      </header>
+    </>
   );
 }
