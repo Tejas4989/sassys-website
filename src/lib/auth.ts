@@ -33,6 +33,9 @@ async function recordAttempt(email: string, ip: string, succeeded: boolean) {
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   secret: process.env.AUTH_SECRET,
+  // Cloudflare Workers is not an auto-trusted host; opt in so Auth.js doesn't
+  // reject every request with UntrustedHost behind the workers.dev/custom domain.
+  trustHost: true,
   session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 }, // 30 days
   pages: {
     signIn: "/admin/login",
