@@ -9,7 +9,7 @@ enabled = true
 
 [[kv_namespaces]]
 binding = "RATE_LIMIT_KV"
-id = "placeholder_replace_with_real_id"
+id = "9cd5029834ee4636bcf6ef3e29e7a182"
 
 [triggers]
 crons = [
