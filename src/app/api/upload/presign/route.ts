@@ -3,8 +3,6 @@ import { auth } from "@/lib/auth";
 import { generatePresignedUploadUrl, makeImageKey } from "@/lib/r2";
 import { z } from "zod";
 
-// Only edge-compatible if using native fetch in r2.ts.
-// r2.ts uses @aws-sdk which needs Node runtime for signing.
 export const runtime = "nodejs";
 
 const schema = z.object({

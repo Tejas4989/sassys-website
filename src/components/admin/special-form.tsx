@@ -1,16 +1,26 @@
 "use client";
 
 import { useState } from "react";
-import { toast } from "sonner";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import Link from "next/link";
 import { ImageUpload } from "./image-upload";
-import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import { Bold, Italic, List } from "lucide-react";
+
+// Client-only: keeps tiptap/ProseMirror out of the server (Worker) bundle.
+const RichTextEditor = dynamic(
+  () => import("./rich-text-editor").then((m) => m.RichTextEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="border border-border rounded-lg min-h-[160px] p-3 text-sm text-muted-foreground">
+        Loading editor…
+      </div>
+    ),
+  }
+);
 
 interface Special {
   id: string;
@@ -31,16 +41,14 @@ interface Props {
 export function SpecialForm({ special, action, deleteAction }: Props) {
   const [imageKey, setImageKey] = useState(special?.imageKey ?? "");
   const [isActive, setIsActive] = useState(special?.isActive ?? true);
-
-  const editor = useEditor({
-    extensions: [StarterKit],
-    content: special?.body ?? "<p>Describe this week's special...</p>",
-  });
+  const [body, setBody] = useState(
+    special?.body ?? "<p>Describe this week's special...</p>"
+  );
 
   async function handleSubmit(fd: FormData) {
     fd.set("imageKey", imageKey);
     fd.set("isActive", isActive ? "on" : "off");
-    fd.set("body", editor?.getHTML() ?? "");
+    fd.set("body", body);
     await action(fd);
   }
 
@@ -83,36 +91,10 @@ export function SpecialForm({ special, action, deleteAction }: Props) {
 
       <div className="space-y-1.5">
         <Label>Description *</Label>
-        {/* TipTap toolbar */}
-        <div className="border border-border rounded-lg overflow-hidden">
-          <div className="flex gap-1 p-2 border-b border-border bg-muted/50">
-            <button
-              type="button"
-              onClick={() => editor?.chain().focus().toggleBold().run()}
-              className={`p-1.5 rounded hover:bg-background ${editor?.isActive("bold") ? "bg-background shadow-sm" : ""}`}
-            >
-              <Bold className="w-3.5 h-3.5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => editor?.chain().focus().toggleItalic().run()}
-              className={`p-1.5 rounded hover:bg-background ${editor?.isActive("italic") ? "bg-background shadow-sm" : ""}`}
-            >
-              <Italic className="w-3.5 h-3.5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => editor?.chain().focus().toggleBulletList().run()}
-              className={`p-1.5 rounded hover:bg-background ${editor?.isActive("bulletList") ? "bg-background shadow-sm" : ""}`}
-            >
-              <List className="w-3.5 h-3.5" />
-            </button>
-          </div>
-          <EditorContent
-            editor={editor}
-            className="min-h-[120px] p-3 text-sm prose prose-sm max-w-none focus-within:outline-none"
-          />
-        </div>
+        <RichTextEditor
+          initialContent={special?.body ?? "<p>Describe this week's special...</p>"}
+          onChange={setBody}
+        />
       </div>
 
       <div className="space-y-1.5">

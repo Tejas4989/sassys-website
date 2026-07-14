@@ -73,26 +73,12 @@ export async function GET(req: NextRequest) {
 
     const body = lines.join("");
 
-    // Write to R2 via fetch (S3-compatible)
-    const { S3Client, PutObjectCommand } = await import("@aws-sdk/client-s3");
-    const client = new S3Client({
-      region: "auto",
-      endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-      credentials: {
-        accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
-      },
+    // Write to R2 via its S3-compatible API (aws4fetch under the hood).
+    const { uploadToR2 } = await import("@/lib/r2");
+    await uploadToR2(r2Key, body, "application/x-ndjson", {
+      "backup-date": dateStr,
+      "record-count": String(lines.length - 1),
     });
-
-    await client.send(
-      new PutObjectCommand({
-        Bucket: process.env.R2_BUCKET_NAME ?? "sassys-media",
-        Key: r2Key,
-        Body: body,
-        ContentType: "application/x-ndjson",
-        Metadata: { "backup-date": dateStr, "record-count": String(lines.length - 1) },
-      })
-    );
 
     report.r2Key = r2Key;
     report.totalRecords = lines.length - 1; // exclude header comment

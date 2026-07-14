@@ -1,10 +1,22 @@
-// Generates presigned URLs for direct browser-to-R2 uploads.
-// Uses the S3-compatible API endpoint for Cloudflare R2.
+// Presigned URLs and direct uploads for Cloudflare R2 via its S3-compatible API.
+// Uses aws4fetch (a few KiB) instead of the AWS SDK to keep the Worker bundle
+// under Cloudflare's size limit.
+
+import { AwsClient } from "aws4fetch";
 
 const R2_ENDPOINT = `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`;
 const BUCKET = process.env.R2_BUCKET_NAME ?? "sassys-media";
 const PUBLIC_BASE =
   process.env.R2_PUBLIC_BASE ?? `https://media.mysassys.com`;
+
+function r2Client(): AwsClient {
+  return new AwsClient({
+    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+    service: "s3",
+    region: "auto",
+  });
+}
 
 export function getPublicUrl(key: string): string {
   return `${PUBLIC_BASE}/${key}`;
@@ -15,26 +27,35 @@ export async function generatePresignedUploadUrl(
   contentType: string,
   expiresInSeconds = 300
 ): Promise<string> {
-  // Use @aws-sdk/s3-request-presigner with S3Client pointed at R2
-  const { S3Client, PutObjectCommand } = await import("@aws-sdk/client-s3");
-  const { getSignedUrl } = await import("@aws-sdk/s3-request-presigner");
-
-  const client = new S3Client({
-    region: "auto",
-    endpoint: R2_ENDPOINT,
-    credentials: {
-      accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
-    },
+  // Sign a query-based (presigned) PUT. Only `host` is signed, so the client's
+  // Content-Type is sent as an unsigned header — R2 accepts and stores it.
+  const url = new URL(`${R2_ENDPOINT}/${BUCKET}/${key}`);
+  url.searchParams.set("X-Amz-Expires", String(expiresInSeconds));
+  const signed = await r2Client().sign(url.toString(), {
+    method: "PUT",
+    aws: { signQuery: true },
   });
+  return signed.url;
+}
 
-  const command = new PutObjectCommand({
-    Bucket: BUCKET,
-    Key: key,
-    ContentType: contentType,
+export async function uploadToR2(
+  key: string,
+  body: BodyInit,
+  contentType: string,
+  metadata?: Record<string, string>
+): Promise<void> {
+  const headers: Record<string, string> = { "content-type": contentType };
+  for (const [k, v] of Object.entries(metadata ?? {})) {
+    headers[`x-amz-meta-${k}`] = v;
+  }
+  const res = await r2Client().fetch(`${R2_ENDPOINT}/${BUCKET}/${key}`, {
+    method: "PUT",
+    body,
+    headers,
   });
-
-  return getSignedUrl(client, command, { expiresIn: expiresInSeconds });
+  if (!res.ok) {
+    throw new Error(`R2 upload failed: ${res.status} ${await res.text()}`);
+  }
 }
 
 export function makeImageKey(folder: string, filename: string): string {
