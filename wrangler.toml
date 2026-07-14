@@ -25,8 +25,9 @@ crons = [
 binding = "R2"
 bucket_name = "sassys-media"
 
+# Testing on dev domain first; flip to https://mysassys.com when verified.
 [vars]
-NEXT_PUBLIC_APP_URL = "https://mysassys.com"
+NEXT_PUBLIC_APP_URL = "https://dev.mysassys.com"
 
 # Secrets (set via: wrangler secret put <NAME>)
 # DATABASE_URL          — Neon connection string

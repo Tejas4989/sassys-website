@@ -1,6 +1,12 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Instantiate lazily so importing this module at build time (page-data
+// collection) doesn't require RESEND_API_KEY — the key only exists at runtime.
+let _resend: Resend | undefined;
+function getResend(): Resend {
+  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY);
+  return _resend;
+}
 const FROM = "Sassy's Bakery <noreply@mysassys.com>";
 
 export async function sendOrderConfirmation(opts: {
@@ -27,7 +33,7 @@ export async function sendOrderConfirmation(opts: {
         ? `Delivery date: ${opts.deliveryDate}`
         : "";
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: opts.to,
     subject: `Sassy's Order Confirmation #${opts.orderId.slice(0, 8).toUpperCase()}`,
@@ -49,7 +55,7 @@ export async function sendOrderReady(opts: {
   name: string;
   orderId: string;
 }) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: opts.to,
     subject: `Your Sassy's order is ready! 🎉`,
@@ -68,7 +74,7 @@ export async function sendWholesaleWelcome(opts: {
   passcode: string;
   loginUrl: string;
 }) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: opts.to,
     subject: `Welcome to Sassy's Wholesale Portal — ${opts.businessName}`,
@@ -107,7 +113,7 @@ export async function sendWholesaleOrderConfirmation(opts: {
         ? `Pickup at: ${opts.pickupAt.toLocaleString("en-CA", { timeZone: "America/Toronto" })}`
         : "";
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: opts.to,
     subject: `Wholesale Order Received — ${opts.businessName}`,
@@ -127,7 +133,7 @@ export async function sendContactMessage(opts: {
   email: string;
   message: string;
 }) {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: process.env.ADMIN_EMAIL ?? "inquiry@mysassys.com",
     replyTo: opts.email,
@@ -149,7 +155,7 @@ export async function sendAdminCateringAlert(opts: {
   notes?: string | null;
 }) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://mysassys.com";
-  await resend.emails.send({
+  await getResend().emails.send({
     from: FROM,
     to: process.env.ADMIN_EMAIL ?? "inquiry@mysassys.com",
     subject: `⚠️ Catering order needs review — $${(opts.totalCents / 100).toFixed(2)}`,
