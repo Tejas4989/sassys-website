@@ -20,13 +20,6 @@ const nextConfig: NextConfig = {
       { source: "/our-menu/", destination: "/menu", permanent: true },
       { source: "/contact-us", destination: "/contact", permanent: true },
       { source: "/contact-us/", destination: "/contact", permanent: true },
-      // WordPress query-string pages
-      {
-        source: "/",
-        has: [{ type: "query", key: "page_id" }],
-        destination: "/",
-        permanent: false,
-      },
       // WordPress category/tag archive patterns
       { source: "/category/:slug*", destination: "/menu", permanent: true },
       { source: "/tag/:slug*", destination: "/", permanent: true },
