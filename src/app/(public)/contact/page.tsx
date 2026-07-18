@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600;
 
-const MAPS_URL = "https://maps.app.goo.gl/wonS1n9hNg9URyJb8";
+const MAPS_URL = "https://maps.app.goo.gl/nGiziYxjzQMqWoa49";
 
 export default async function ContactPage() {
   const { regular: hours } = await getHours();
