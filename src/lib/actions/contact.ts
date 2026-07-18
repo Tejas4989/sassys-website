@@ -31,7 +31,7 @@ export async function submitContact(
   } catch {
     return {
       ok: false,
-      error: "Sorry — we couldn't send your message. Please call (519) 000-0000.",
+      error: "Sorry — we couldn't send your message. Please call (519) 491-1234.",
     };
   }
 }

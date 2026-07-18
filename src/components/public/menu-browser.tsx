@@ -35,7 +35,7 @@ export function MenuBrowser({
     return (
       <div className="text-center py-24 text-label">
         <p className="text-lg font-display font-bold">Menu coming soon.</p>
-        <p className="text-sm mt-2">Call us at (519) 000-0000 to hear today&apos;s offerings.</p>
+        <p className="text-sm mt-2">Call us at (519) 491-1234 to hear today&apos;s offerings.</p>
       </div>
     );
   }

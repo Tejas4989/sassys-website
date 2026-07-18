@@ -55,7 +55,7 @@ export function PublicFooter() {
           <div className="text-[13px] leading-[1.7] text-footer-text">
             225 King St<br />
             Thorndale, ON<br />
-            (519) 000-0000
+            (519) 491-1234
           </div>
         </div>
       </div>

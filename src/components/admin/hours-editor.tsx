@@ -9,6 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Plus, Trash2 } from "lucide-react";
 import { saveHours, createHolidayOverride, deleteHolidayOverride } from "@/lib/actions/hours";
+import { formatTime } from "@/lib/data/hours";
 
 const DAY_NAMES = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
@@ -137,7 +138,7 @@ export function HoursEditor({ initialHours, initialOverrides }: Props) {
                   <span className="font-medium">{ov.label}</span>
                   <span className="text-muted-foreground ml-2">({ov.date})</span>
                   <span className="text-muted-foreground ml-2">
-                    {ov.isClosed ? "Closed" : `${ov.opensAt} – ${ov.closesAt}`}
+                    {ov.isClosed ? "Closed" : `${formatTime(ov.opensAt ?? "")} – ${formatTime(ov.closesAt ?? "")}`}
                   </span>
                 </div>
                 <Button

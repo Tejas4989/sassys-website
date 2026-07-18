@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getHours, DAY_NAMES } from "@/lib/data/hours";
+import { getHours, DAY_NAMES, formatTime } from "@/lib/data/hours";
 import { PhotoSlot } from "@/components/public/photo-slot";
 import { ContactForm } from "@/components/public/contact-form";
 import { JsonLd, breadcrumbSchema } from "@/components/seo/json-ld";
@@ -56,7 +56,7 @@ export default async function ContactPage() {
             <div className="mb-5">
               <div className="font-display font-bold text-[15px] mb-1">Phone</div>
               <a href="tel:+15190000000" className="text-[15px] text-ink-soft hover:text-sassy-red transition-colors">
-                (519) 000-0000
+                (519) 491-1234
               </a>
             </div>
 
@@ -67,7 +67,7 @@ export default async function ContactPage() {
                   <div key={h.dayOfWeek} className="contents">
                     <span>{DAY_NAMES[h.dayOfWeek]}</span>
                     <span className="text-right">
-                      {h.isClosed ? "Closed" : `${h.opensAt} – ${h.closesAt}`}
+                      {h.isClosed ? "Closed" : `${formatTime(h.opensAt)} – ${formatTime(h.closesAt)}`}
                     </span>
                   </div>
                 ))}
