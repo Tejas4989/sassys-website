@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PhotoSlot } from "@/components/public/photo-slot";
 import { JsonLd, breadcrumbSchema } from "@/components/seo/json-ld";
+import { getPublicUrl } from "@/lib/r2";
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://mysassys.com";
 
@@ -48,6 +49,7 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 nav:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-8 nav:gap-14 items-center mb-[50px]">
           <PhotoSlot
             label="Family / storefront photo"
+            src={getPublicUrl("site/about.jpg")}
             className="w-full h-[240px] nav:h-[360px] rounded-[20px]"
           />
           <div>

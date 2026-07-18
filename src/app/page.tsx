@@ -9,6 +9,7 @@ import { PhotoSlot } from "@/components/public/photo-slot";
 import { JsonLd, localBusinessSchema } from "@/components/seo/json-ld";
 import { getActiveSpecials } from "@/lib/data/specials";
 import { HOME_CATEGORIES, SPECIAL_ACCENTS } from "@/lib/data/fallback-content";
+import { getPublicUrl } from "@/lib/r2";
 
 export const metadata: Metadata = {
   title: "Sassy's Bakery — Bakery, Deli & Pizzeria in Thorndale, ON",
@@ -69,6 +70,7 @@ export default async function HomePage() {
             </div>
             <PhotoSlot
               label="Hero photo — pizza / storefront"
+              src={getPublicUrl("site/hero.jpg")}
               className="w-full h-[260px] nav:h-[440px] rounded-[28px] relative z-[1] shadow-[0_18px_40px_rgba(43,33,24,0.18)]"
             />
           </div>
@@ -118,7 +120,11 @@ export default async function HomePage() {
                   href={cat.slug ? `/menu?cat=${cat.slug}` : "/menu"}
                   className="group bg-white rounded-2xl overflow-hidden border border-line transition hover:-translate-y-1 hover:shadow-[0_10px_22px_rgba(43,33,24,0.14)]"
                 >
-                  <PhotoSlot label="Photo" className="w-full h-[120px]" />
+                  <PhotoSlot
+                    label={cat.label}
+                    src={getPublicUrl(`site/cat-${cat.slug || "baking"}.jpg`)}
+                    className="w-full h-[120px]"
+                  />
                   <div className="p-3.5 font-display font-bold text-[15px] text-center">
                     {cat.label}
                   </div>
@@ -132,6 +138,7 @@ export default async function HomePage() {
         <section className="mx-auto max-w-[1280px] px-5 nav:px-7 py-11 nav:py-16 grid grid-cols-1 nav:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-8 nav:gap-14 items-center">
           <PhotoSlot
             label="Storefront / family photo"
+            src={getPublicUrl("site/story.jpg")}
             className="w-full h-[240px] nav:h-[360px] rounded-[20px]"
           />
           <div>

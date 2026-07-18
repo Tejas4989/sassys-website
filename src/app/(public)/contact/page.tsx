@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getHours, DAY_NAMES, formatTime } from "@/lib/data/hours";
 import { PhotoSlot } from "@/components/public/photo-slot";
 import { ContactForm } from "@/components/public/contact-form";
+import { getPublicUrl } from "@/lib/r2";
 import { JsonLd, breadcrumbSchema } from "@/components/seo/json-ld";
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://mysassys.com";
@@ -44,6 +45,7 @@ export default async function ContactPage() {
             <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="block mb-[26px]">
               <PhotoSlot
                 label="Map / storefront photo — open in Google Maps"
+                src={getPublicUrl("site/contact.jpg")}
                 className="w-full h-[240px] rounded-2xl"
               />
             </a>
