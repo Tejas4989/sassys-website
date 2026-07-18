@@ -3,7 +3,6 @@
 import { Plus, Minus, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "./cart-context";
-import { getPublicUrl } from "@/lib/r2";
 
 interface ItemCardProps {
   itemId: string;
@@ -11,9 +10,12 @@ interface ItemCardProps {
   description?: string | null;
   priceCents: number;
   imageKey?: string | null;
+  // Public image URL resolved on the server (getPublicUrl needs the R2 base,
+  // which isn't available in the browser bundle).
+  imageUrl?: string | null;
 }
 
-export function ItemCard({ itemId, name, description, priceCents, imageKey }: ItemCardProps) {
+export function ItemCard({ itemId, name, description, priceCents, imageKey, imageUrl }: ItemCardProps) {
   const { items, addItem, setQty } = useCart();
   const cartItem = items.find((i) => i.itemId === itemId);
   const qty = cartItem?.qty ?? 0;
@@ -24,9 +26,9 @@ export function ItemCard({ itemId, name, description, priceCents, imageKey }: It
 
   return (
     <div className="flex gap-3 p-4 rounded-xl border border-border bg-card hover:shadow-sm transition-shadow">
-      {imageKey && (
+      {imageUrl && (
         <img
-          src={getPublicUrl(imageKey)}
+          src={imageUrl}
           alt={name}
           className="w-16 h-16 rounded-lg object-cover shrink-0"
           loading="lazy"

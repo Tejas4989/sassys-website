@@ -3,6 +3,7 @@ import { getMenuWithCategories } from "@/lib/data/menu";
 import { CartProvider } from "@/components/order/cart-context";
 import { ItemCard } from "@/components/order/item-card";
 import { CartDrawer } from "@/components/order/cart-drawer";
+import { getPublicUrl } from "@/lib/r2";
 
 export const metadata: Metadata = {
   title: "Order Online",
@@ -73,6 +74,7 @@ export default async function OrderPage() {
                         description={item.description}
                         priceCents={item.priceCents}
                         imageKey={item.imageKey}
+                        imageUrl={item.imageKey ? getPublicUrl(item.imageKey) : null}
                       />
                     ))}
                   </div>

@@ -28,6 +28,8 @@ bucket_name = "sassys-media"
 # Testing on dev domain first; flip to https://mysassys.com when verified.
 [vars]
 NEXT_PUBLIC_APP_URL = "https://dev.mysassys.com"
+# Public base for R2-served images (item photos, gallery). Read by getPublicUrl.
+NEXT_PUBLIC_R2_PUBLIC_BASE = "https://pub-a21ed65ce26c44ffa339783a9c6ba685.r2.dev"
 
 # Secrets (set via: wrangler secret put <NAME>)
 # DATABASE_URL          — Neon connection string
@@ -48,3 +50,4 @@ NEXT_PUBLIC_APP_URL = "https://dev.mysassys.com"
 name = "sassys-staging"
 [env.staging.vars]
 NEXT_PUBLIC_APP_URL = "https://v2.mysassys.com"
+NEXT_PUBLIC_R2_PUBLIC_BASE = "https://pub-a21ed65ce26c44ffa339783a9c6ba685.r2.dev"

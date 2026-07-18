@@ -6,8 +6,13 @@ import { AwsClient } from "aws4fetch";
 
 const R2_ENDPOINT = `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`;
 const BUCKET = process.env.R2_BUCKET_NAME ?? "sassys-media";
+// getPublicUrl runs in client components too (item cards, cart), so the public
+// base must be readable in the browser — use the NEXT_PUBLIC_ var there, and
+// fall back to the server-only var for server-side callers.
 const PUBLIC_BASE =
-  process.env.R2_PUBLIC_BASE ?? `https://media.mysassys.com`;
+  process.env.NEXT_PUBLIC_R2_PUBLIC_BASE ??
+  process.env.R2_PUBLIC_BASE ??
+  `https://media.mysassys.com`;
 
 function r2Client(): AwsClient {
   return new AwsClient({
