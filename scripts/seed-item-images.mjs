@@ -22,6 +22,7 @@ const opt = (name, def) => {
 const TABLE = opt("table", "all");
 const LIMIT = opt("limit") ? parseInt(opt("limit"), 10) : Infinity;
 const DRY = !!opt("dry", false);
+const ONLY_FIXED = !!opt("only-fixed", false); // reseed only items with an override
 
 const sql = neon(process.env.DATABASE_URL);
 const ENDPOINT = `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`;
@@ -50,8 +51,28 @@ const CATEGORY_KEYWORDS = {
   "Sweet Baked Goods": "cinnamon roll",
 };
 
+// Explicit per-item query overrides where the category/keyword heuristic picks
+// a poor match. Matched by (lowercased) name substring, checked first.
+const ITEM_OVERRIDES = [
+  { match: "ice cream", query: "ice cream cone" },
+  { match: "extra scoop", query: "ice cream scoop bowl" },
+  { match: "loaded nachos", query: "loaded nachos" },
+  { match: "butter chicken with rice", query: "butter chicken curry rice" },
+  { match: "garlic chicken", query: "pizza" }, // a specialty pizza, not garlic bread
+  { match: "pizza dough balls", query: "pizza dough" },
+  { match: "taco salad", query: "taco salad" },
+];
+
+function overrideFor(itemName) {
+  const n = itemName.toLowerCase();
+  const o = ITEM_OVERRIDES.find((o) => n.includes(o.match));
+  return o ? o.query : null;
+}
+
 // A few item names map to a better, more specific query than their category.
 function queryFor(itemName, category) {
+  const override = overrideFor(itemName);
+  if (override) return override;
   const n = itemName.toLowerCase();
   if (n.includes("fries")) return "french fries";
   if (n.includes("salad")) return "garden salad";
@@ -109,6 +130,7 @@ async function processTable(table) {
   let done = 0;
   for (const row of rows) {
     if (done >= LIMIT) break;
+    if (ONLY_FIXED && !overrideFor(row.name)) continue;
     const query = queryFor(row.name, row.category);
     const key = `${folder}/${slug(row.name)}-${row.id.slice(0, 8)}.jpg`;
     try {
