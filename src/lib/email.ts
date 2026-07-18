@@ -1,13 +1,40 @@
-import { Resend } from "resend";
+// Transactional email via Resend's REST API using plain fetch. We call the API
+// directly instead of the `resend` SDK to keep the Cloudflare Worker bundle
+// under the size limit (the SDK pulls in ~200 KiB we don't need).
 
-// Instantiate lazily so importing this module at build time (page-data
-// collection) doesn't require RESEND_API_KEY — the key only exists at runtime.
-let _resend: Resend | undefined;
-function getResend(): Resend {
-  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY);
-  return _resend;
-}
 const FROM = "Sassy's Bakery <noreply@mysassys.com>";
+const RESEND_ENDPOINT = "https://api.resend.com/emails";
+
+interface EmailInput {
+  to: string;
+  subject: string;
+  html: string;
+  replyTo?: string;
+}
+
+async function sendEmail({ to, subject, html, replyTo }: EmailInput) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) throw new Error("RESEND_API_KEY is not set");
+
+  const res = await fetch(RESEND_ENDPOINT, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: FROM,
+      to,
+      subject,
+      html,
+      ...(replyTo ? { reply_to: replyTo } : {}),
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`Resend API error: ${res.status} ${await res.text()}`);
+  }
+}
 
 export async function sendOrderConfirmation(opts: {
   to: string;
@@ -33,8 +60,7 @@ export async function sendOrderConfirmation(opts: {
         ? `Delivery date: ${opts.deliveryDate}`
         : "";
 
-  await getResend().emails.send({
-    from: FROM,
+  await sendEmail({
     to: opts.to,
     subject: `Sassy's Order Confirmation #${opts.orderId.slice(0, 8).toUpperCase()}`,
     html: `
@@ -55,8 +81,7 @@ export async function sendOrderReady(opts: {
   name: string;
   orderId: string;
 }) {
-  await getResend().emails.send({
-    from: FROM,
+  await sendEmail({
     to: opts.to,
     subject: `Your Sassy's order is ready! 🎉`,
     html: `
@@ -74,8 +99,7 @@ export async function sendWholesaleWelcome(opts: {
   passcode: string;
   loginUrl: string;
 }) {
-  await getResend().emails.send({
-    from: FROM,
+  await sendEmail({
     to: opts.to,
     subject: `Welcome to Sassy's Wholesale Portal — ${opts.businessName}`,
     html: `
@@ -113,8 +137,7 @@ export async function sendWholesaleOrderConfirmation(opts: {
         ? `Pickup at: ${opts.pickupAt.toLocaleString("en-CA", { timeZone: "America/Toronto" })}`
         : "";
 
-  await getResend().emails.send({
-    from: FROM,
+  await sendEmail({
     to: opts.to,
     subject: `Wholesale Order Received — ${opts.businessName}`,
     html: `
@@ -133,8 +156,7 @@ export async function sendContactMessage(opts: {
   email: string;
   message: string;
 }) {
-  await getResend().emails.send({
-    from: FROM,
+  await sendEmail({
     to: process.env.ADMIN_EMAIL ?? "inquiry@mysassys.com",
     replyTo: opts.email,
     subject: `New contact message from ${opts.name}`,
@@ -155,8 +177,7 @@ export async function sendAdminCateringAlert(opts: {
   notes?: string | null;
 }) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://mysassys.com";
-  await getResend().emails.send({
-    from: FROM,
+  await sendEmail({
     to: process.env.ADMIN_EMAIL ?? "inquiry@mysassys.com",
     subject: `⚠️ Catering order needs review — $${(opts.totalCents / 100).toFixed(2)}`,
     html: `

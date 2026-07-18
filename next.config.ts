@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   images: {
@@ -65,13 +64,7 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withSentryConfig(nextConfig, {
-  org: process.env.SENTRY_ORG,
-  project: process.env.SENTRY_PROJECT,
-  authToken: process.env.SENTRY_AUTH_TOKEN,
-  silent: !process.env.CI,
-  telemetry: false,
-  errorHandler: (err: Error) => {
-    console.warn("Sentry config error (non-fatal):", err.message);
-  },
-});
+// Sentry was wrapped here but never initialized (no DSN, no Sentry.init, no
+// instrumentation files), so it captured nothing at runtime while adding weight
+// to the Cloudflare Worker bundle. Removed to stay under the 3 MiB Worker limit.
+export default nextConfig;

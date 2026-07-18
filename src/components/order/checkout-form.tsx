@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { z } from "zod";
 import { Loader2, CreditCard, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,15 +10,35 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useCart } from "./cart-context";
 
-const schema = z.object({
-  customerName: z.string().min(1, "Name is required"),
-  customerEmail: z.string().email("Valid email required"),
-  customerPhone: z.string().optional(),
-  pickupAt: z.string().min(1, "Pickup time is required"),
-  paymentMethod: z.enum(["clover_hosted", "pay_in_store"]),
-  isCateringExplicit: z.boolean(),
-  notes: z.string().max(500).optional(),
-});
+interface CheckoutInput {
+  customerName: string;
+  customerEmail: string;
+  customerPhone?: string;
+  pickupAt: string;
+  paymentMethod: "clover_hosted" | "pay_in_store";
+  isCateringExplicit: boolean;
+  notes?: string;
+}
+
+// Lightweight client-side validation for inline UX errors. The /api/orders
+// route re-validates authoritatively with zod on the server; keeping zod out
+// of this client component avoids shipping it in the browser/SSR bundle.
+function validateCheckout(raw: CheckoutInput): Record<string, string> {
+  const errors: Record<string, string> = {};
+  if (!raw.customerName || !raw.customerName.trim()) {
+    errors.customerName = "Name is required";
+  }
+  if (!raw.customerEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw.customerEmail)) {
+    errors.customerEmail = "Valid email required";
+  }
+  if (!raw.pickupAt) {
+    errors.pickupAt = "Pickup time is required";
+  }
+  if (raw.notes && raw.notes.length > 500) {
+    errors.notes = "Notes must be 500 characters or fewer";
+  }
+  return errors;
+}
 
 interface Props {
   onCancel: () => void;
@@ -60,12 +79,8 @@ export function CheckoutForm({ onCancel }: Props) {
       notes: fd.get("notes") as string || undefined,
     };
 
-    const parsed = schema.safeParse(raw);
-    if (!parsed.success) {
-      const errs: Record<string, string> = {};
-      parsed.error.issues.forEach((issue) => {
-        if (issue.path[0]) errs[issue.path[0] as string] = issue.message;
-      });
+    const errs = validateCheckout(raw);
+    if (Object.keys(errs).length > 0) {
       setErrors(errs);
       return;
     }
@@ -76,8 +91,8 @@ export function CheckoutForm({ onCancel }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...parsed.data,
-          pickupAt: new Date(parsed.data.pickupAt).toISOString(),
+          ...raw,
+          pickupAt: new Date(raw.pickupAt).toISOString(),
           fulfillment: "pickup",
           items: items.map((i) => ({ itemId: i.itemId, qty: i.qty })),
         }),
