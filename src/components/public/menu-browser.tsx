@@ -7,6 +7,9 @@ type Item = {
   name: string;
   description: string | null;
   priceCents: number;
+  // Public image URL, resolved on the server (getPublicUrl needs the R2 base,
+  // which isn't available in the browser bundle).
+  imageUrl?: string | null;
 };
 type Category = { id: number; name: string; slug: string; items: Item[] };
 
@@ -70,11 +73,21 @@ export function MenuBrowser({
             key={it.id}
             className="bg-white border border-line rounded-[14px] px-[22px] py-5 flex justify-between gap-4"
           >
-            <div>
-              <div className="font-display font-bold text-[17px] mb-1.5">{it.name}</div>
-              {it.description && (
-                <div className="text-sm text-ink-soft leading-normal">{it.description}</div>
+            <div className="flex gap-4 min-w-0">
+              {it.imageUrl && (
+                <img
+                  src={it.imageUrl}
+                  alt={it.name}
+                  className="w-16 h-16 rounded-lg object-cover shrink-0"
+                  loading="lazy"
+                />
               )}
+              <div className="min-w-0">
+                <div className="font-display font-bold text-[17px] mb-1.5">{it.name}</div>
+                {it.description && (
+                  <div className="text-sm text-ink-soft leading-normal">{it.description}</div>
+                )}
+              </div>
             </div>
             <div className="font-display font-bold text-base text-sassy-red whitespace-nowrap">
               {formatPrice(it.priceCents)}

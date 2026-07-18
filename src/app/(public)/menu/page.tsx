@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getMenuWithCategories } from "@/lib/data/menu";
 import { MenuBrowser } from "@/components/public/menu-browser";
 import { JsonLd, breadcrumbSchema } from "@/components/seo/json-ld";
+import { getPublicUrl } from "@/lib/r2";
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://mysassys.com";
 
@@ -24,10 +25,20 @@ export default async function MenuPage({
 }: {
   searchParams: Promise<{ cat?: string }>;
 }) {
-  const [{ cat }, categories] = await Promise.all([
+  const [{ cat }, rawCategories] = await Promise.all([
     searchParams,
     getMenuWithCategories(),
   ]);
+
+  // Resolve image URLs on the server — MenuBrowser is a client component and
+  // can't read the R2 base from the browser bundle.
+  const categories = rawCategories.map((c) => ({
+    ...c,
+    items: c.items.map((it) => ({
+      ...it,
+      imageUrl: it.imageKey ? getPublicUrl(it.imageKey) : null,
+    })),
+  }));
 
   return (
     <>
