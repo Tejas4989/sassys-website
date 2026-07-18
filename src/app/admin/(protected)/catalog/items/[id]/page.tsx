@@ -13,7 +13,7 @@ export default async function EditWholesaleItemPage({ params }: { params: Promis
   return (
     <div className="max-w-xl">
       <h1 className="font-heading text-2xl font-bold mb-6">Edit Wholesale Item</h1>
-      <WholesaleItemForm categories={categories} item={item} action={(fd) => updateWholesaleItem(id, fd)} />
+      <WholesaleItemForm categories={categories} item={item} action={updateWholesaleItem.bind(null, id)} />
     </div>
   );
 }

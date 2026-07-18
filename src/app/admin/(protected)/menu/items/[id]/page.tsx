@@ -25,7 +25,7 @@ export default async function EditMenuItemPage({
       <MenuItemForm
         categories={categories}
         item={item}
-        action={(fd) => updateMenuItem(id, fd)}
+        action={updateMenuItem.bind(null, id)}
       />
     </div>
   );

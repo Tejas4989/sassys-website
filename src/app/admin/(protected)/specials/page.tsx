@@ -60,8 +60,8 @@ export default async function AdminSpecialsPage() {
                     </Badge>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {s.startsOn.toLocaleDateString("en-CA")} –{" "}
-                    {s.endsOn.toLocaleDateString("en-CA")}
+                    {s.startsOn.toLocaleDateString("en-CA", { timeZone: "UTC" })} –{" "}
+                    {s.endsOn.toLocaleDateString("en-CA", { timeZone: "UTC" })}
                   </p>
                 </div>
                 <Button asChild variant="ghost" size="sm">

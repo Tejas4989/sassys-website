@@ -13,7 +13,7 @@ export default async function EditSpecialPage({ params }: { params: Promise<{ id
   return (
     <div className="max-w-2xl">
       <h1 className="font-heading text-2xl font-bold mb-6">Edit Special</h1>
-      <SpecialForm special={special} action={(fd) => updateSpecial(id, fd)} deleteAction={() => deleteSpecial(id)} />
+      <SpecialForm special={special} action={updateSpecial.bind(null, id)} deleteAction={deleteSpecial.bind(null, id)} />
     </div>
   );
 }

@@ -134,6 +134,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
     session({ session, token }) {
+      if (token.sub) session.user.id = token.sub;
       session.user.role = token.role as string;
       (session as any).wholesaleCustomerId = token.wholesaleCustomerId;
       (session as any).passcodeMustChange = token.passcodeMustChange;
