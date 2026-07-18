@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600;
 
-const MAPS_URL = "https://maps.google.com/?q=225+King+St+Thorndale+ON";
+const MAPS_URL = "https://maps.app.goo.gl/wonS1n9hNg9URyJb8";
 
 export default async function ContactPage() {
   const { regular: hours } = await getHours();
@@ -45,7 +45,7 @@ export default async function ContactPage() {
             <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="block mb-[26px]">
               <PhotoSlot
                 label="Map / storefront photo — open in Google Maps"
-                src={getPublicUrl("site/contact.jpg")}
+                src={getPublicUrl("site/contact.png")}
                 className="w-full h-[240px] rounded-2xl"
               />
             </a>
