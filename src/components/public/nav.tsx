@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { SITE } from "@/lib/site";
+import { CanadianSeal } from "@/components/public/canadian-badges";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -38,21 +40,29 @@ export function PublicNav() {
     <>
       {/* Utility ribbon — scrolls away with the page (not sticky) */}
       <div className="bg-forest-dark text-gold text-center font-display font-semibold text-xs tracking-wide px-3 py-[7px]">
-        Family owned since day one&nbsp; · &nbsp;225 King St, Thorndale ON
+        <span aria-hidden>🍁</span> Proudly Canadian · Family owned · Serving Thorndale since {SITE.foundingYear}&nbsp; · &nbsp;{SITE.address}
       </div>
 
       {/* Sticky nav */}
       <header className="sticky top-0 z-50 bg-cream/95 backdrop-blur-[6px] border-b-2 border-line">
         <div className="mx-auto max-w-[1280px] px-5 py-2.5 flex items-center justify-between gap-4">
-          {/* Logo */}
-          <Link href="/" className="flex items-center shrink-0" aria-label="Sassy's Bakery — home">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/sassys-logo.png"
-              alt="Sassy's Bakery"
-              className="h-11 nav:h-[58px] w-auto block"
-            />
-          </Link>
+          {/* Logo + small-town seal */}
+          <div className="flex items-center gap-3 shrink-0">
+            <Link href="/" className="flex items-center" aria-label="Sassy's Bakery — home">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/sassys-logo.png"
+                alt="Sassy's Bakery"
+                className="h-11 nav:h-[58px] w-auto block"
+              />
+            </Link>
+            <span className="hidden nav:flex items-center shrink-0">
+              <CanadianSeal
+                size={54}
+                className="drop-shadow-[0_2px_5px_rgba(43,33,24,0.18)]"
+              />
+            </span>
+          </div>
 
           {/* Desktop nav */}
           <nav className="hidden nav:flex items-center gap-1 font-body text-[15px] font-semibold flex-wrap">

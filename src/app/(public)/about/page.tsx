@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PhotoSlot } from "@/components/public/photo-slot";
 import { JsonLd, breadcrumbSchema } from "@/components/seo/json-ld";
-import { getPublicUrl } from "@/lib/r2";
+import { SITE } from "@/lib/site";
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://mysassys.com";
 
@@ -42,6 +42,9 @@ export default function AboutPage() {
         ])}
       />
       <div className="mx-auto max-w-[1280px] px-5 nav:px-7 pt-7 nav:pt-11 pb-16 nav:pb-20 font-body text-ink">
+        <span className="inline-flex items-center gap-2 bg-forest text-cream font-display font-bold text-[13px] px-4 py-[6px] rounded-full mb-4">
+          Family owned · Serving Thorndale since {SITE.foundingYear}
+        </span>
         <h1 className="font-editorial font-semibold text-[28px] nav:text-[38px] mb-[30px]">
           Our Story
         </h1>
@@ -49,19 +52,21 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 nav:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-8 nav:gap-14 items-center mb-[50px]">
           <PhotoSlot
             label="Family / storefront photo"
-            src={getPublicUrl("site/about.jpg")}
+            src="/site/about.jpg"
             className="w-full h-[240px] nav:h-[360px] rounded-[20px]"
           />
           <div>
             <p className="text-[17px] leading-[1.75] text-[#3B2F24] mb-4">
-              Sassy&apos;s is a family-owned bakery, deli and pizzeria on King
-              Street in Thorndale, Ontario. What started as a small counter has
-              grown into the neighbourhood&apos;s go-to for pizza night,
-              hand-built subs, fried chicken dinners and fresh-baked goods.
+              For years, the smell of fresh baking on King Street has meant one
+              thing in Thorndale: Sassy&apos;s. We&apos;re a family-owned bakery,
+              deli and pizzeria, and what started as a small counter has grown
+              into the neighbourhood&apos;s go-to for pizza night, hand-built
+              subs, fried chicken dinners and bread pulled warm from the oven.
             </p>
             <p className="text-[17px] leading-[1.75] text-[#3B2F24]">
               Everything is still made to order, by hand, the way it&apos;s
-              always been — and now the same recipes are available to local
+              always been — no shortcuts, nothing sitting around, just food
+              we&apos;d serve our own family. Today those same recipes reach local
               stores and restaurants through our wholesale program.
             </p>
           </div>

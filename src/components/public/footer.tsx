@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { SITE } from "@/lib/site";
+import { SocialLinks } from "@/components/public/social-links";
+import { ProudlyCanadian, CanadianSeal } from "@/components/public/canadian-badges";
 
 const EXPLORE = [
   { href: "/menu", label: "Menu" },
@@ -21,8 +24,12 @@ export function PublicFooter() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/sassys-logo.png" alt="Sassy's" className="h-[60px] w-auto mb-3.5" />
           <p className="text-[13px] leading-relaxed text-footer-muted max-w-[260px]">
-            Family-owned bakery, deli &amp; pizzeria in Thorndale, Ontario.
+            Family-owned bakery, deli &amp; pizzeria in Thorndale, Ontario, since {SITE.foundingYear}.
           </p>
+          <ProudlyCanadian className="mt-4 bg-[#453A2E] text-footer-text text-[13px] px-3 py-[7px] rounded-full" />
+          <div className="mt-4">
+            <SocialLinks className="w-9 h-9 rounded-full bg-[#453A2E] text-footer-text flex items-center justify-center hover:bg-gold hover:text-ink transition-colors" />
+          </div>
         </div>
 
         {/* Explore */}
@@ -50,14 +57,20 @@ export function PublicFooter() {
         </div>
 
         {/* Visit */}
-        <div>
+        <div className="flex flex-col">
           <div className="font-display font-bold text-[13px] text-cream mb-3">Visit</div>
           <div className="text-[13px] leading-[1.7] text-footer-text">
-            225 King St<br />
-            Thorndale, ON<br />
-            (519) 491-1234
+            {SITE.street}<br />
+            {SITE.city}, {SITE.region}<br />
+            <a href={SITE.phoneHref} className="hover:text-gold transition-colors">{SITE.phone}</a>
           </div>
         </div>
+
+      </div>
+
+      {/* Small-town Canadian seal — shown on mobile (header carries it on desktop) */}
+      <div className="nav:hidden flex justify-center mt-10">
+        <CanadianSeal size={96} className="animate-float" />
       </div>
 
       <div className="mx-auto max-w-[1280px] mt-[34px] border-t border-[#453A2E] pt-[18px] text-xs text-label-soft flex flex-col sm:flex-row justify-between gap-2">

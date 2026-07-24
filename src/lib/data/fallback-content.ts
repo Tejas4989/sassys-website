@@ -133,6 +133,28 @@ export const HOME_CATEGORIES: { label: string; slug: string }[] = [
   { label: "Fresh Baking", slug: "" },
 ];
 
+// ─── Coming-soon programs (homepage teaser) ──────────────────────────────────
+// Future work — shown as "coming soon" cards to set expectations. No links yet.
+export const HOME_PROGRAMS: {
+  label: string;
+  blurb: string;
+  icon: string;
+  image: string;
+}[] = [
+  { label: "Gift Cards", blurb: "The tastiest gift in town — coming soon.", icon: "gift", image: "/site/prog-gift.jpg" },
+  { label: "Weekly Flyer", blurb: "This week's deals, straight to your inbox.", icon: "newspaper", image: "/site/prog-flyer.jpg" },
+  { label: "Loyalty Rewards", blurb: "Earn on every order and save.", icon: "star", image: "/site/prog-loyalty.jpg" },
+  { label: "Senior's Discount", blurb: "A little thank-you for our regulars.", icon: "heart", image: "/site/prog-senior.jpg" },
+];
+
+// ─── Reviews (homepage trust strip) ──────────────────────────────────────────
+// ⚠️ PLACEHOLDER quotes — replace with real Google/Yelp reviews before launch.
+export const HOME_REVIEWS: { quote: string; author: string }[] = [
+  { quote: "Best pizza in Thorndale, hands down. The whole family orders here every Friday.", author: "Local regular" },
+  { quote: "Fresh baking every morning and the friendliest counter around.", author: "Happy customer" },
+  { quote: "Their fried chicken dinners are the real deal — always made to order.", author: "Neighbour" },
+];
+
 // ─── Weekly specials ──────────────────────────────────────────────────────────
 
 export const FALLBACK_SPECIALS: SpecialView[] = [

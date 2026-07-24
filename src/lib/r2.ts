@@ -68,3 +68,38 @@ export function makeImageKey(folder: string, filename: string): string {
   const id = crypto.randomUUID();
   return `${folder}/${id}.${ext}`;
 }
+
+export type R2Object = { key: string; lastModified: string; size: number };
+
+/**
+ * List objects under a prefix via the S3-compatible ListObjectsV2 API.
+ * Returns up to 1000 objects (plenty for a photo gallery). Powers the public
+ * gallery so images dropped into a folder appear without any code/DB changes.
+ */
+export async function listObjects(prefix: string): Promise<R2Object[]> {
+  const url = new URL(`${R2_ENDPOINT}/${BUCKET}`);
+  url.searchParams.set("list-type", "2");
+  url.searchParams.set("prefix", prefix);
+  url.searchParams.set("max-keys", "1000");
+
+  const res = await r2Client().fetch(url.toString(), { method: "GET" });
+  if (!res.ok) {
+    throw new Error(`R2 list failed: ${res.status} ${await res.text()}`);
+  }
+
+  const xml = await res.text();
+  const objects: R2Object[] = [];
+  const re = /<Contents>([\s\S]*?)<\/Contents>/g;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(xml)) !== null) {
+    const block = m[1];
+    const key = block.match(/<Key>([^<]+)<\/Key>/)?.[1];
+    if (!key || key.endsWith("/")) continue; // skip folder placeholder objects
+    objects.push({
+      key,
+      lastModified: block.match(/<LastModified>([^<]+)<\/LastModified>/)?.[1] ?? "",
+      size: Number(block.match(/<Size>(\d+)<\/Size>/)?.[1] ?? "0"),
+    });
+  }
+  return objects;
+}

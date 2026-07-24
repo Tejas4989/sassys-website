@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { sendContactMessage } from "@/lib/email";
+import { SITE } from "@/lib/site";
 
 const schema = z.object({
   name: z.string().trim().min(1, "Please enter your name.").max(120),
@@ -31,7 +32,7 @@ export async function submitContact(
   } catch {
     return {
       ok: false,
-      error: "Sorry — we couldn't send your message. Please call (519) 491-1234.",
+      error: `Sorry — we couldn't send your message. Please call ${SITE.phone}.`,
     };
   }
 }

@@ -1,6 +1,8 @@
 // Renders JSON-LD structured data in a <script> tag.
 // Usage: <JsonLd data={mySchemaObject} />
 
+import { SITE } from "@/lib/site";
+
 interface Props {
   data: Record<string, unknown>;
 }
@@ -25,11 +27,11 @@ export function localBusinessSchema() {
     name: "Sassy's Bakery",
     alternateName: ["Sassy's", "Sassy's Bakery & Deli"],
     url: base,
-    telephone: "+15194611234",
-    email: "inquiry@mysassys.com",
+    telephone: SITE.phoneHref.replace("tel:", ""),
+    email: SITE.email,
     image: `${base}/icon-512.png`,
     description:
-      "Family-owned bakery, deli & pizzeria in Thorndale, Ontario since 1990. Fresh baked breads, pizza, subs, fried chicken, deli meats, and Shaw's Ice Cream. Commercial wholesale bakery supplying a 40-mile radius.",
+      `Family-owned bakery, deli & pizzeria in Thorndale, Ontario since ${SITE.foundingYear}. Fresh baked breads, pizza, subs, fried chicken, deli meats, and Shaw's Ice Cream. Commercial wholesale bakery supplying a 40-mile radius.`,
     priceRange: "$$",
     servesCuisine: ["Bakery", "Pizza", "Deli", "Canadian"],
     hasMenu: `${base}/menu`,
@@ -53,7 +55,11 @@ export function localBusinessSchema() {
       { "@type": "OpeningHoursSpecification", dayOfWeek: ["Saturday"], opens: "07:00", closes: "23:00" },
       { "@type": "OpeningHoursSpecification", dayOfWeek: ["Sunday"], opens: "07:00", closes: "21:00" },
     ],
-    sameAs: [],
+    sameAs: [
+      SITE.social.facebookUrl,
+      SITE.social.googleReviewsUrl,
+      SITE.social.yelpUrl,
+    ].filter(Boolean),
     potentialAction: {
       "@type": "OrderAction",
       target: `${base}/order`,

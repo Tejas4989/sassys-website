@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import { MapPin } from "lucide-react";
 import { getHours, DAY_NAMES, formatTime } from "@/lib/data/hours";
 import { PhotoSlot } from "@/components/public/photo-slot";
 import { ContactForm } from "@/components/public/contact-form";
-import { getPublicUrl } from "@/lib/r2";
 import { JsonLd, breadcrumbSchema } from "@/components/seo/json-ld";
+import { SITE } from "@/lib/site";
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://mysassys.com";
 
@@ -21,7 +22,7 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600;
 
-const MAPS_URL = "https://maps.app.goo.gl/nGiziYxjzQMqWoa49";
+const MAPS_URL = SITE.mapsUrl;
 
 export default async function ContactPage() {
   const { regular: hours } = await getHours();
@@ -42,23 +43,32 @@ export default async function ContactPage() {
         <div className="grid grid-cols-1 nav:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-10">
           {/* Info */}
           <div>
-            <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="block mb-[26px]">
+            <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="block mb-4">
               <PhotoSlot
                 label="Map / storefront photo — open in Google Maps"
-                src={getPublicUrl("site/contact.png")}
+                src="/site/contact.jpg"
                 className="w-full h-[240px] rounded-2xl"
               />
             </a>
 
+            <a
+              href={MAPS_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-forest text-cream rounded-full px-5 py-2.5 font-display font-bold text-sm hover:brightness-110 transition mb-[26px]"
+            >
+              <MapPin className="w-4 h-4" /> Get Directions
+            </a>
+
             <div className="mb-5">
               <div className="font-display font-bold text-[15px] mb-1">Address</div>
-              <div className="text-[15px] text-ink-soft">225 King St, Thorndale, ON</div>
+              <div className="text-[15px] text-ink-soft">{SITE.address}</div>
             </div>
 
             <div className="mb-5">
               <div className="font-display font-bold text-[15px] mb-1">Phone</div>
-              <a href="tel:+15190000000" className="text-[15px] text-ink-soft hover:text-sassy-red transition-colors">
-                (519) 491-1234
+              <a href={SITE.phoneHref} className="text-[15px] text-ink-soft hover:text-sassy-red transition-colors">
+                {SITE.phone}
               </a>
             </div>
 

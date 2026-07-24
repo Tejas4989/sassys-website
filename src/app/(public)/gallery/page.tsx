@@ -8,11 +8,11 @@ const BASE = process.env.NEXT_PUBLIC_APP_URL ?? "https://mysassys.com";
 export const metadata: Metadata = {
   title: "Gallery",
   description:
-    "Cakes, breads, storefront & catering — a peek inside Sassy's kitchen in Thorndale, ON.",
+    "Fresh baking, hand-built orders and a peek inside Sassy's kitchen in Thorndale, ON.",
   alternates: { canonical: `${BASE}/gallery` },
   openGraph: {
     title: "Gallery | Sassy's Bakery",
-    description: "Cakes, breads, storefront & catering photos from Sassy's Bakery.",
+    description: "Photos from Sassy's Bakery in Thorndale, ON.",
     url: `${BASE}/gallery`,
   },
 };
@@ -35,9 +35,18 @@ export default async function GalleryPage() {
           Gallery
         </h1>
         <p className="text-base text-label mb-[34px]">
-          Cakes, breads, storefront &amp; catering — a peek inside the kitchen.
+          Fresh baking, hand-built orders &amp; a peek inside the kitchen.
         </p>
-        <GalleryGrid photos={photos} />
+        {photos.length > 0 ? (
+          <GalleryGrid photos={photos} />
+        ) : (
+          <div className="text-center py-20 text-label">
+            <p className="font-display font-bold text-lg text-ink">Photos coming soon</p>
+            <p className="text-sm mt-2">
+              We&apos;re plating up something worth showing — check back soon!
+            </p>
+          </div>
+        )}
       </div>
     </>
   );
