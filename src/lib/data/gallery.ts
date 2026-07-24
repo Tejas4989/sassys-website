@@ -9,9 +9,10 @@ export type GalleryImage = {
   category: string;
 };
 
-// Folder in the R2 bucket the public gallery reads from. Override with the
-// GALLERY_R2_PREFIX env var if you ever want to point it elsewhere.
-const GALLERY_PREFIX = process.env.GALLERY_R2_PREFIX ?? "gallery/";
+// Folder in the R2 bucket the public gallery reads from (note: the bucket
+// folder is spelled "gallary/"). Override with the GALLERY_R2_PREFIX env var
+// if you ever want to point it elsewhere.
+const GALLERY_PREFIX = process.env.GALLERY_R2_PREFIX ?? "gallary/";
 const IMAGE_RE = /\.(jpe?g|png|webp|avif|gif)$/i;
 
 /** Turn "gallery/chocolate-cake-9f2ab1.jpg" into "Chocolate Cake". */

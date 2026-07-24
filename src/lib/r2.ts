@@ -24,7 +24,10 @@ function r2Client(): AwsClient {
 }
 
 export function getPublicUrl(key: string): string {
-  return `${PUBLIC_BASE}/${key}`;
+  // Encode each path segment so keys with spaces or parens (e.g. user-uploaded
+  // gallery filenames) resolve correctly. Slug-safe keys are unaffected.
+  const encoded = key.split("/").map(encodeURIComponent).join("/");
+  return `${PUBLIC_BASE}/${encoded}`;
 }
 
 export async function generatePresignedUploadUrl(
